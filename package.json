@@ -1,0 +1,45 @@
+{
+  "name": "multiple-csv-merge-to-json",
+  "version": "1.0.0",
+  "description": "Merge multiple CSV files and output to JSON file",
+  "main": "dist/index.ts",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node dist/index.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rebecamurillo/multiple-csv-merge-to-json.git"
+  },
+  "keywords": [
+    "csv",
+    "merge",
+    "json",
+    "multiple"
+  ],
+  "author": "Rebeca Murillo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rebecamurillo/multiple-csv-merge-to-json/issues"
+  },
+  "homepage": "https://github.com/rebecamurillo/multiple-csv-merge-to-json#readme",
+  "devDependencies": {
+    "@types/jest": "^27.5.1",
+    "@types/node": "^17.0.32",
+    "jest": "^28.1.0",
+    "ts-jest": "^28.0.2",
+    "typescript": "^4.6.4"
+  },
+  "dependencies": {
+    "csvtojson": "^2.0.10",
+    "fs": "^0.0.1-security"
+  },
+  "jest": {
+    "preset": "ts-jest"
+  },
+  "files": [
+    "/dist"
+  ]
+}
