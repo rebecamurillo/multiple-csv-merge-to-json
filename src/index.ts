@@ -43,7 +43,7 @@ async function readExistingJsonDataArray(
     const encoding = options.encoding || DEFAULT_FILE_ENCODING;
 
     const data = await readFileSync(
-      `${options.outputDir}/${options.outputFileName}`,
+      `${options.outputDir}/${options.outputFileName}.json`,
       encoding
     );
     if (typeof data === "string") return JSON.parse(data) as Array<Object>;
