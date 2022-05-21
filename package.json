@@ -1,12 +1,13 @@
 {
   "name": "multiple-csv-merge-to-json",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Merge multiple CSV files and output to JSON file",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "start": "npm run build && node dist/index.js",
+    "publish": "npm run test && npm run build && npm publish",
     "test": "jest"
   },
   "repository": {

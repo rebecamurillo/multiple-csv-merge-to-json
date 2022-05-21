@@ -1,2 +1,4 @@
 node_modules
 dist
+data_input_files
+data_output_files
