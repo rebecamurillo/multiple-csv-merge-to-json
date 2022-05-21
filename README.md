@@ -8,7 +8,7 @@ Files should be given in order of retention data. If key was already in previous
 
 I had a scenario with 3 spreadsheets with different columns to merge. Instead of making crazy spreadsheet formulas, I decided to code a JS module.
 
-Using mosule [csvtojson](https://www.npmjs.com/package/csvtojson) for single CSV file convertion to JSON.
+Using module [csvtojson](https://www.npmjs.com/package/csvtojson) for single CSV file read and convertion to JSON.
 
 ## How to use
 
@@ -21,7 +21,8 @@ Using mosule [csvtojson](https://www.npmjs.com/package/csvtojson) for single CSV
 |outputDir| Destination folder for generated JSON file | true | string|
 |outputFileName| File name of generated JSON file|true| string|
 |columnDelimiter| CSV column separator | true | string|
-|encoding| CSV files encoding, default to 'utf8' | no | WriteFileOptions|
+|encoding| CSV files encoding, default to 'utf8' | no | string |
+|groupBy| Group data by key | no | { groupByKey: string; groupedArrayProperty: string } |
 
 ### mergeCsvFilesToJsonArray(options: MultCsvMergeToJsonOptions)
 
@@ -95,7 +96,7 @@ File 3
 | EL TIGRE | AHUACHAPAN | AHUACHAPAN | Delincuencia | PUNTO DE ENCUENTRO |
 | CTON EL ROSARIO | AHUACHAPAN | AHUACHAPAN | Delincuencia | PUNTO DE ENCUENTRO |
 
-Expected MERGED file :
+Expected MERGED data :
 | city | region | locality | risk | deliveryInstruction | deliverySchedule | rate |
 | ------------- | ------------ | --------------- | ------------ | ------------------- | ----------------------- | ---- |
 | Apopa | San Salvador | Madre Selva | Delincuencia | PUNTO DE ENCUENTRO | DE LUNES A SABADO | 4 |
@@ -107,6 +108,25 @@ Expected MERGED file :
 | MEJICANOS | SAN SALVADOR | |||DE LUNES A SABADO |3 |
 
 ### Output json
+
+Execute :
+
+```js
+mergeCsvFilesToJsonArray({
+  inputDir: "./data_input_files",
+  inputKeys: ["city", "region"],
+  inputFileNameList: [
+    "general_rates.csv",
+    "premium_rates.csv",
+    "danger_zones.csv",
+  ],
+  outputDir: "./data_output_json",
+  outputFileName: "delivery_rates",
+  columnDelimiter: ",",
+});
+```
+
+Result in file saved :
 
 ```json
 [
@@ -169,5 +189,101 @@ Expected MERGED file :
     "locality": "CTON EL ROSARIO",
     "risk": "DELINCUENCIA"
   }
-]s
+]
+```
+
+### Output json with group by
+
+Execute :
+
+```js
+mergeCsvFilesToJsonArray({
+  inputDir: "./data_input_files",
+  inputKeys: ["city", "region"],
+  inputFileNameList: [
+    "general_rates.csv",
+    "premium_rates.csv",
+    "danger_zones.csv",
+  ],
+  outputDir: "./data_output_json",
+  outputFileName: "delivery_rates",
+  columnDelimiter: ",",
+  groupBy: { groupByKey: "region", groupedArrayProperty: "cities" },
+});
+```
+
+Result in file saved :
+
+```json
+[
+  {
+    "region": "AHUACHAPAN",
+    "cities": [
+      {
+        "city": "AHUACHAPAN",
+        "region": "AHUACHAPAN",
+        "deliverySchedule": "LUNES-MIERCOLES-VIERNES",
+        "rate": "3",
+        "deliveryInstruction": "PUNTO DE ENCUENTRO",
+        "locality": "EL TIGRE",
+        "risk": "DELINCUENCIA"
+      },
+      {
+        "city": "AHUACHAPAN",
+        "region": "AHUACHAPAN",
+        "deliverySchedule": "LUNES-MIERCOLES-VIERNES",
+        "rate": "3",
+        "deliveryInstruction": "PUNTO DE ENCUENTRO",
+        "updated": true,
+        "locality": "CTON EL ROSARIO",
+        "risk": "DELINCUENCIA"
+      }
+    ]
+  },
+  {
+    "region": "SAN SALVADOR",
+    "cities": [
+      {
+        "city": "APOPA",
+        "region": "SAN SALVADOR",
+        "deliverySchedule": "LUNES A SABADO",
+        "rate": "4",
+        "deliveryInstruction": "PUNTO DE ENCUENTRO",
+        "locality": "MADRE SELVA",
+        "risk": "DELINCUENCIA"
+      },
+      {
+        "city": "AYUTUXTEPEQUE",
+        "region": "SAN SALVADOR",
+        "deliverySchedule": "LUNES A SABADO",
+        "rate": "4",
+        "deliveryInstruction": ""
+      },
+      {
+        "city": "MEJICANOS",
+        "region": "SAN SALVADOR",
+        "deliverySchedule": "DE LUNES A SABADO",
+        "rate": "3",
+        "deliveryInstruction": ""
+      },
+      {
+        "city": "SAN SALVADOR",
+        "region": "SAN SALVADOR",
+        "deliverySchedule": "LUNES A SABADO",
+        "rate": "4",
+        "deliveryInstruction": ""
+      },
+      {
+        "city": "APOPA",
+        "region": "SAN SALVADOR",
+        "deliverySchedule": "LUNES A SABADO",
+        "rate": "4",
+        "deliveryInstruction": "PUNTO DE ENCUENTRO",
+        "updated": true,
+        "locality": "POPOTLAN",
+        "risk": "DELINCUENCIA"
+      }
+    ]
+  }
+]
 ```

@@ -3,6 +3,8 @@ const csv = require("csvtojson");
 
 const DEFAULT_FILE_ENCODING = "utf8";
 
+type GroupByOptions = { groupByKey: string; groupedArrayProperty: string };
+
 type MultCsvMergeToJsonOptions = {
   inputDir: string;
   inputKeys: Array<string>;
@@ -11,11 +13,12 @@ type MultCsvMergeToJsonOptions = {
   outputFileName: string;
   columnDelimiter: string;
   encoding?: WriteFileOptions;
+  groupBy?: GroupByOptions;
 };
 
 function writeOutputFile(
   options: MultCsvMergeToJsonOptions,
-  jsonObj: Array<Object>
+  jsonObj: Array<Object> | Object
 ) {
   const dataBuffer = Buffer.from(JSON.stringify(jsonObj));
   const destFile = `${options.outputDir}/${options.outputFileName}.json`;
@@ -31,7 +34,7 @@ function writeOutputFile(
     console.log(
       "multiple-csv-merge-to-json SUCCESS lines written in file %s : %s",
       destFile,
-      jsonObj.length
+      Object.keys(jsonObj).length
     );
   });
 }
@@ -156,6 +159,50 @@ function updateData(
   return updatedData;
 }
 
+function aggregateData(dataList: Array<any>, groupByOptions: GroupByOptions) {
+  let aggregatedArray: Array<Object> = [];
+  const dataMap = new Map();
+
+  for (const data of dataList) {
+    const key = data[groupByOptions.groupByKey];
+    const existingDataByKey = dataMap.get(key);
+    const object = { ...data };
+    delete object[groupByOptions.groupByKey];
+
+    if (existingDataByKey) {
+      existingDataByKey.push(object);
+      dataMap.set(key, existingDataByKey);
+    } else {
+      dataMap.set(key, [object]);
+    }
+  }
+
+  const mapKeys = dataMap.keys();
+  let keyObject = mapKeys.next();
+  //Convert map to Object
+  const newArray = [];
+  while (!keyObject.done) {
+    const _key = keyObject.value;
+    let _object = {
+      [groupByOptions.groupByKey]: _key,
+      [groupByOptions.groupedArrayProperty]: dataMap.get(_key),
+    };
+
+    aggregatedArray.push(_object);
+    keyObject = mapKeys.next();
+  }
+
+  return aggregatedArray;
+}
+
+function groupByData(dataList: Array<any>, groupByKey: GroupByOptions) {
+  let aggregatedArray: Array<Object> = [];
+
+  aggregatedArray = aggregateData(dataList, groupByKey);
+
+  return aggregatedArray;
+}
+
 async function mergeCsvFilesToJsonArray(options: MultCsvMergeToJsonOptions) {
   try {
     const filesDataImported = await generateArrayOfJSONfromCSV(options);
@@ -185,7 +232,12 @@ async function mergeCsvFilesToJsonArray(options: MultCsvMergeToJsonOptions) {
       });
     }
 
-    writeOutputFile(options, outputData);
+    if (options.groupBy) {
+      const groupedObject = groupByData(outputData, options.groupBy);
+      writeOutputFile(options, groupedObject);
+    } else {
+      writeOutputFile(options, outputData);
+    }
   } catch (error) {
     console.log(
       "multiple-csv-merge-to-json ERROR mergeCsvFilesToJsonArray",
