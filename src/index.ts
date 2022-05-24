@@ -14,6 +14,7 @@ type MultCsvMergeToJsonOptions = {
   columnDelimiter: string;
   encoding?: WriteFileOptions;
   groupBy?: GroupByOptions;
+  writeToFile?: boolean;
 };
 
 function writeOutputFile(
@@ -232,12 +233,14 @@ async function mergeCsvFilesToJsonArray(options: MultCsvMergeToJsonOptions) {
       });
     }
 
+    let finalObject = outputData;
     if (options.groupBy) {
-      const groupedObject = groupByData(outputData, options.groupBy);
-      writeOutputFile(options, groupedObject);
-    } else {
-      writeOutputFile(options, outputData);
+      finalObject = groupByData(outputData, options.groupBy);
     }
+    if (options.writeToFile) {
+      writeOutputFile(options, finalObject);
+    }
+    return finalObject;
   } catch (error) {
     console.log(
       "multiple-csv-merge-to-json ERROR mergeCsvFilesToJsonArray",

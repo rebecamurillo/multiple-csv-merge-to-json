@@ -23,6 +23,8 @@ Using module [csvtojson](https://www.npmjs.com/package/csvtojson) for single CSV
 |columnDelimiter| CSV column separator | true | string|
 |encoding| CSV files encoding, default to 'utf8' | no | string |
 |groupBy| Group data by key | no | { groupByKey: string; groupedArrayProperty: string } |
+|writeToFile| Write to file, default to true | no | boolean |
+
 
 ### mergeCsvFilesToJsonArray(options: MultCsvMergeToJsonOptions)
 
