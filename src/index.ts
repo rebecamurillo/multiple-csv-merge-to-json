@@ -251,4 +251,4 @@ async function getJsonArray(options: MultCsvMergeToJsonOptions) {
   return readExistingJsonDataArray(options);
 }
 
-export { MultCsvMergeToJsonOptions, mergeCsvFilesToJsonArray, getJsonArray };
+export { MultCsvMergeToJsonOptions, mergeCsvFilesToJsonArray, getJsonArray, writeOutputFile };
