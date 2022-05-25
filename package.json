@@ -1,6 +1,6 @@
 {
   "name": "multiple-csv-merge-to-json",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Merge multiple CSV files and output to JSON file",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -244,7 +244,7 @@ async function mergeCsvFilesToJsonArray(options: MultCsvMergeToJsonOptions) {
     if (options.groupBy) {
       finalObject = groupByData(outputData, options.groupBy);
     }
-    if (!options.writeToFile || options.writeToFile === true) {
+    if (options.writeToFile === true) {
       writeOutputFile(options, finalObject);
     }
     return finalObject;
