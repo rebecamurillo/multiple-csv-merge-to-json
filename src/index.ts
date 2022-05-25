@@ -15,6 +15,7 @@ type MultCsvMergeToJsonOptions = {
   encoding?: WriteFileOptions;
   groupBy?: GroupByOptions;
   writeToFile?: boolean;
+  replaceValues?: boolean;
 };
 
 function writeOutputFile(
@@ -132,7 +133,8 @@ function mergeObjects(existingObject: any, newObject: any): any {
 function updateData(
   objectKeys: Array<string>,
   existingData: Array<any>,
-  newData: Array<Object>
+  newData: Array<Object>,
+  replaceValues: boolean | undefined
 ): Array<Object> {
   let updatedData = [...existingData];
 
@@ -143,7 +145,7 @@ function updateData(
 
     if (indexFound >= 0) {
       const mergedObject = mergeObjects(existingData[indexFound], data);
-      if (existingData[indexFound].updated) {
+      if (!replaceValues || existingData[indexFound].updated) {
         updatedData.push(mergedObject);
       } else {
         existingData[indexFound] = {
@@ -225,7 +227,12 @@ async function mergeCsvFilesToJsonArray(options: MultCsvMergeToJsonOptions) {
           "multiple-csv-merge-to-json reading file at index %s",
           index + 1
         );
-        outputData = updateData(options.inputKeys, outputData, fileData);
+        outputData = updateData(
+          options.inputKeys,
+          outputData,
+          fileData,
+          options.replaceValues
+        );
         console.log(
           "multiple-csv-merge-to-json lines in buffer END ",
           outputData.length
@@ -237,7 +244,7 @@ async function mergeCsvFilesToJsonArray(options: MultCsvMergeToJsonOptions) {
     if (options.groupBy) {
       finalObject = groupByData(outputData, options.groupBy);
     }
-    if (options.writeToFile) {
+    if (!options.writeToFile || options.writeToFile === true) {
       writeOutputFile(options, finalObject);
     }
     return finalObject;
